@@ -1,0 +1,48 @@
+#ifndef DASHBOARD_PANEL_H
+#define DASHBOARD_PANEL_H
+
+#ifndef Q_MOC_RUN
+# include <ros/ros.h>
+
+# include <rviz/panel.h>
+#endif
+
+#include <ui_dashboard_panel2.h>
+#include <QProcess>
+#include <QDir>
+#include <QFileInfo>
+#include "denso_gui.hpp"
+
+namespace denso_gui
+{
+
+class DensoDashboardPanel: public rviz::Panel
+{
+Q_OBJECT
+public:
+
+  explicit DensoDashboardPanel( QWidget* parent = 0);
+  virtual ~DensoDashboardPanel();
+
+protected:
+protected Q_SLOTS:
+void onLaunchNode();
+void onPTPCommand();
+void onCPCommand();
+void onShutdownCommand();
+void onClearErrorCommand();
+void onJointCommand();
+void onStringCommand();
+void onSpeedCommand();
+Q_SIGNALS:
+
+protected:
+  Ui::Form2 ui_;
+  ros::NodeHandle nh_;
+
+private:
+	d_gui::QNode denso_gui;
+
+};
+}
+#endif // DASHBOARD_PANEL_H

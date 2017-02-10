@@ -1,0 +1,103 @@
+/**
+ * @file /include/test_panel/qnode.hpp
+ *
+ * @brief Communications central!
+ *
+ * @date February 2011
+ **/
+/*****************************************************************************
+** Ifdefs
+*****************************************************************************/
+
+#ifndef denso_gui_AQNODE_HPP_
+#define denso_gui_AQNODE_HPP_
+
+/*****************************************************************************
+** Includes
+*****************************************************************************/
+// Always goes first
+#define _CUSTOM_UINT64
+// ROS
+#include <ros/ros.h>
+#include "bcap/stdint.h"
+//#include <atlbase.h>
+#define _USE_MATH_DEFINES
+#include <math.h>
+#include <string>
+#include <QThread>
+#include <QStringListModel>
+#include <sensor_msgs/PointCloud2.h>
+
+#include "std_msgs/String.h"
+#include <sstream>
+#include <pcl/point_cloud.h>
+#include <pcl/PCLPointCloud2.h>
+#include <pcl/point_types.h>
+// bCAP (Always last)
+#include "bcap/bcap_client.h"
+
+/*****************************************************************************
+** Namespaces
+*****************************************************************************/
+
+namespace denso_gui {
+namespace d_gui {
+
+
+/*****************************************************************************
+** Class
+*****************************************************************************/
+
+class QNode : public QThread {
+    Q_OBJECT
+public:
+
+	char buffer[80];
+	int fd;
+	float dJnt[8];
+	VARIANT vntErr; //Variant to hold error codes
+	VARIANT vntS; //Holds the desired speed values
+	VARIANT vSpd; //Holds the read speed values
+	uint32_t hCtrl; //Controller Handle
+	uint32_t hRobot; //Robot Handle
+	uint32_t hTask; //Task Handle
+	uint32_t hErr; //Error Handle
+	int32_t eStatus;  //Error code
+	uint32_t jHandle; //Joint angle handle
+	uint32_t hSpd; //Speed Handle  VARIANT vJnt, vSpd; //Joint and speed variants
+
+	float dnt[3];
+	  //Declare Denso variables
+	  HRESULT hr; //Result
+	  BSTR bstrCommand;  //Command
+	  VARIANT vntParam;  //Command Parameters
+	  VARIANT vntResult;  //Variant to hold return values
+	  VARIANT vJnt; //Joint angle variants
+	  double *pdArray; //Array for reading joint angles
+	  wchar_t wstr[100]; //Wide character array for arm motion commands
+
+	QNode()
+	{}
+	virtual ~QNode();
+	bool init();
+	void send_ptp_command(float x, float y, float z, float rx, float ry, float rz, float fig);
+	void send_cp_command(float x, float y, float z, float rx, float ry, float rz, float fig);
+	void send_joint_command(float j1, float j2, float j3, float j4, float j5, float j6);
+	void send_shutdown();
+	void clear_errors();
+	void send_string(std::string user_string);
+	void send_speed(float speed);
+	void run();
+
+
+Q_SIGNALS:
+    void rosShutdown();
+
+private:
+	int init_argc;
+	char** init_argv;
+};
+}
+}  // namespace 
+
+#endif /* test_panel_QNODE_HPP_ */
